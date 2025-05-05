@@ -5,7 +5,7 @@ import pickle
 import os
 
 # Load dataset
-data = pd.read_csv('data/career_data.csv')
+data = pd.read_csv('career_data.csv')
 
 # Encode categorical variables
 le_interests = LabelEncoder()
