@@ -3,7 +3,7 @@ import pickle
 import numpy as np
 
 # Load model and encoders
-with open('career_model.pkl', 'rb') as f:
+with open('career_counselor_app/model/career_model.pkl', 'rb') as f:
     model = pickle.load(f)
     model = data['model']
     le_interests = data['le_interests']
