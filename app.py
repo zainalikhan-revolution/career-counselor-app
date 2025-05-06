@@ -18,7 +18,7 @@ model = DecisionTreeClassifier()
 model.fit(X, y)
 
 # Save the model to a file
-with open('career_model.pkl', 'wb') as f:
+with open('model/career_model.pkl', 'rb') as f:
     pickle.dump(model, f)
 
 print("✅ Model trained and saved as career_model.pkl")
