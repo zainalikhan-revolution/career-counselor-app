@@ -25,6 +25,12 @@ y = data['career_enc']
 # Train model
 model = DecisionTreeClassifier()
 model.fit(X, y)
+import pickle
+
+with open('career_model.pkl', 'wb') as f:
+    pickle.dump(model, f)
+
+print("✅ Model saved!")
 
 # Save model and encoders
 os.makedirs('model', exist_ok=True)
