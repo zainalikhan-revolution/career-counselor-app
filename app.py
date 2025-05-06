@@ -17,8 +17,11 @@ y = data['recommended_career']
 model = DecisionTreeClassifier()
 model.fit(X, y)
 
-# Save the model to a file
+import pickle
+
+# Load the model from the correct path
 with open('career_counselor_app/model/career_model.pkl', 'rb') as f:
-    pickle.dump(model, f)
+    model = pickle.load(f)
+
 
 print("✅ Model trained and saved as career_model.pkl")
