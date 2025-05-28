@@ -17,7 +17,7 @@ if not os.path.exists(MODEL_PATH):
     data = pd.read_csv('career_data.csv')
 
     # Simple label encoding for interest and skills
-    data['interest'] = pd.factorize(data['interest'])[0]
+    data['interests'] = pd.factorize(data['interests'])[0]
     data['skills'] = pd.factorize(data['skills'])[0]
 
     # Features and target
