@@ -16,13 +16,16 @@ if not os.path.exists(MODEL_PATH):
     # Load your dataset
     data = pd.read_csv('career_data.csv')
 
+    # Make sure column names match the CSV exactly
+    # CSV columns: interests, skills, marks, preferred_environment, career_path
+
     # Simple label encoding for interest and skills
-    data['interests'] = pd.factorize(data['interests'])[0]
-    data['skills'] = pd.factorize(data['skills'])[0]
+    data['interests_encoded'] = pd.factorize(data['interests'])[0]
+    data['skills_encoded'] = pd.factorize(data['skills'])[0]
 
     # Features and target
-    X = data[['interest', 'skills']]
-    y = data['recommended_career']
+    X = data[['interests_encoded', 'skills_encoded']]
+    y = data['career_path']
 
     # Train the model
     model = DecisionTreeClassifier()
@@ -43,18 +46,24 @@ else:
     st.write("✅ Model loaded successfully.")
 
 # User Input
-interest = st.text_input("Enter your main interest:")
-skills = st.text_input("Enter your main skills:")
+interest = st.text_input("Enter your main interest (e.g., Science, Arts, Commerce):")
+skills = st.text_input("Enter your main skill (e.g., Mathematics, Writing):")
 
 # Predict Button
 if st.button("Get Career Recommendation"):
     if interest and skills:
-        # Encode user input
-        interest_encoded = pd.factorize([interest])[0][0]
-        skills_encoded = pd.factorize([skills])[0][0]
+        # Use same encoding as during training
+        all_interests = ['Science', 'Arts', 'Agriculture', 'Commerce', 'Education']
+        all_skills = ['Mathematics', 'Writing', 'Biology', 'Accounting', 'Teaching']
 
-        # Make prediction
-        prediction = model.predict([[interest_encoded, skills_encoded]])[0]
-        st.success(f"🎯 Recommended Career: {prediction}")
+        if interest in all_interests and skills in all_skills:
+            interest_encoded = all_interests.index(interest)
+            skills_encoded = all_skills.index(skills)
+
+            # Make prediction
+            prediction = model.predict([[interest_encoded, skills_encoded]])[0]
+            st.success(f"🎯 Recommended Career: {prediction}")
+        else:
+            st.error("❌ Invalid input. Please enter values exactly as shown in the dataset.")
     else:
         st.error("❌ Please enter both interest and skills.")
