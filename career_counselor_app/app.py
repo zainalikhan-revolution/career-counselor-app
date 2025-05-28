@@ -1,57 +1,65 @@
 import streamlit as st
+import pandas as pd
+from sklearn.tree import DecisionTreeClassifier
 import pickle
-import numpy as np
+import os
 
-# Load model and encoders
-with open('career_model.pkl', 'rb') as f:
-    model = pickle.load(f)
-    model = data['model']
-    le_interests = data['le_interests']
-    le_skills = data['le_skills']
-    le_environment = data['le_environment']
-    le_career = data['le_career']
+st.title("AI-Powered Career Counselor")
+st.write("Get personalized career recommendations based on your interests and skills.")
 
-# Language selection
-language = st.selectbox("Select Language / زبان منتخب کریں:", ["English", "اردو"])
+MODEL_PATH = 'career_counselor_app/model/career_model.pkl'
 
-# Define labels based on language
-if language == "English":
-    title = "AI-Powered Career Counselor"
-    description = "Helping students in rural areas discover suitable career paths."
-    interest_label = "Select your interest:"
-    skill_label = "Select your skill:"
-    marks_label = "Enter your academic marks (%):"
-    environment_label = "Preferred work environment:"
-    button_label = "Get Career Recommendation"
-    result_label = "Recommended Career Path:"
+if not os.path.exists(MODEL_PATH):
+    st.write("🔧 Training Model... (First Time Setup)")
+    
+    # Load your dataset
+    data = pd.read_csv('career_data.csv')
+    
+    # Fix column names: remove spaces and lowercase
+    data.columns = data.columns.str.strip().str.lower()
+    st.write("Columns in CSV:", data.columns.tolist())
+    
+    # Encode interests and skills
+    data['interests_encoded'] = pd.factorize(data['interests'])[0]
+    data['skills_encoded'] = pd.factorize(data['skills'])[0]
+    
+    # Features and target
+    X = data[['interests_encoded', 'skills_encoded']]
+    y = data['career_path']
+    
+    # Train the model
+    model = DecisionTreeClassifier()
+    model.fit(X, y)
+    
+    # Save model
+    os.makedirs('career_counselor_app/model', exist_ok=True)
+    with open(MODEL_PATH, 'wb') as f:
+        pickle.dump(model, f)
+    
+    st.write("✅ Model trained and saved.")
 else:
-    title = "اے آئی پر مبنی کیریئر مشیر"
-    description = "دیہی علاقوں کے طلباء کو موزوں کیریئر راستے تلاش کرنے میں مدد فراہم کرنا۔"
-    interest_label = "اپنی دلچسپی منتخب کریں:"
-    skill_label = "اپنی مہارت منتخب کریں:"
-    marks_label = "اپنے تعلیمی نمبر درج کریں (%):"
-    environment_label = "ترجیحی کام کا ماحول:"
-    button_label = "کیریئر کی سفارش حاصل کریں"
-    result_label = "تجویز کردہ کیریئر راستہ:"
+    with open(MODEL_PATH, 'rb') as f:
+        model = pickle.load(f)
+    st.write("✅ Model loaded successfully.")
 
-st.title(title)
-st.write(description)
+# Input lists to check user input validity
+all_interests = ['Science', 'Arts', 'Agriculture', 'Commerce', 'Education']
+all_skills = ['Mathematics', 'Writing', 'Biology', 'Accounting', 'Teaching']
 
-# User inputs
-interests = st.selectbox(interest_label, le_interests.classes_)
-skills = st.selectbox(skill_label, le_skills.classes_)
-marks = st.slider(marks_label, 0, 100, 50)
-environment = st.selectbox(environment_label, le_environment.classes_)
+# User input
+interest = st.text_input("Enter your main interest (e.g., Science, Arts, Commerce):")
+skills = st.text_input("Enter your main skill (e.g., Mathematics, Writing):")
 
-if st.button(button_label):
-    # Encode inputs
-    interests_enc = le_interests.transform([interests])[0]
-    skills_enc = le_skills.transform([skills])[0]
-    environment_enc = le_environment.transform([environment])[0]
+# Predict Button
+if st.button("Get Career Recommendation"):
+    if interest and skills:
+        if interest in all_interests and skills in all_skills:
+            interest_encoded = all_interests.index(interest)
+            skills_encoded = all_skills.index(skills)
+            prediction = model.predict([[interest_encoded, skills_encoded]])[0]
+            st.success(f"🎯 Recommended Career: {prediction}")
+        else:
+            st.error(f"❌ Please enter valid interest and skill from these lists:\nInterests: {all_interests}\nSkills: {all_skills}")
+    else:
+        st.error("❌ Please enter both interest and skill.")
 
-    # Predict
-    X = np.array([[interests_enc, skills_enc, marks, environment_enc]])
-    career_enc = model.predict(X)[0]
-    career = le_career.inverse_transform([career_enc])[0]
-
-    st.success(f"{result_label} {career}")
