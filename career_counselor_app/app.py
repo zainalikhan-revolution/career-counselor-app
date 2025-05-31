@@ -1,4 +1,21 @@
 import streamlit as st
+
+# Set custom page title and icon
+st.set_page_config(
+    page_title="Career Counselor AI",  # Your custom app title
+    page_icon="🎯",  # You can change this emoji or use a URL to a favicon
+)
+
+# Hide Streamlit footer and hamburger menu
+hide_streamlit_style = """
+    <style>
+    #MainMenu {visibility: hidden;}  /* hides the hamburger menu */
+    footer {visibility: hidden;}     /* hides the footer */
+    </style>
+"""
+st.markdown(hide_streamlit_style, unsafe_allow_html=True)
+
+import streamlit as st
 import pandas as pd
 import difflib
 
