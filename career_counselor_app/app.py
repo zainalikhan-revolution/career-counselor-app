@@ -1,65 +1,66 @@
 import streamlit as st
 import pandas as pd
-from sklearn.tree import DecisionTreeClassifier
-import pickle
-import os
+import difflib
 
-st.title("AI-Powered Career Counselor")
-st.write("Get personalized career recommendations based on your interests and skills.")
+# -------------------- Page Setup --------------------
+st.set_page_config(page_title="AI Career Counselor", layout="centered")
+st.markdown(
+    "<h1 style='text-align: center; color: #4B8BBE;'>🎓 AI-Powered Career Counselor</h1>"
+    "<p style='text-align: center;'>Get smart and personalized career advice based on your interests and skills</p>",
+    unsafe_allow_html=True
+)
 
-MODEL_PATH = 'career_counselor_app/model/career_model.pkl'
+# -------------------- Example Data (for demo) --------------------
+career_data = [
+    {"career": "Data Scientist", "interest": "Science", "skill": "Mathematics"},
+    {"career": "Journalist", "interest": "Arts", "skill": "Writing"},
+    {"career": "Doctor", "interest": "Science", "skill": "Biology"},
+    {"career": "Accountant", "interest": "Commerce", "skill": "Accounting"},
+    {"career": "Teacher", "interest": "Education", "skill": "Teaching"},
+    {"career": "Agricultural Scientist", "interest": "Agriculture", "skill": "Biology"},
+    {"career": "Economist", "interest": "Commerce", "skill": "Mathematics"},
+    {"career": "Author", "interest": "Arts", "skill": "Writing"},
+]
 
-if not os.path.exists(MODEL_PATH):
-    st.write("🔧 Training Model... (First Time Setup)")
-    
-    # Load your dataset
-    data = pd.read_csv('career_data.csv')
-    
-    # Fix column names: remove spaces and lowercase
-    data.columns = data.columns.str.strip().str.lower()
-    st.write("Columns in CSV:", data.columns.tolist())
-    
-    # Encode interests and skills
-    data['interests_encoded'] = pd.factorize(data['interests'])[0]
-    data['skills_encoded'] = pd.factorize(data['skills'])[0]
-    
-    # Features and target
-    X = data[['interests_encoded', 'skills_encoded']]
-    y = data['career_path']
-    
-    # Train the model
-    model = DecisionTreeClassifier()
-    model.fit(X, y)
-    
-    # Save model
-    os.makedirs('career_counselor_app/model', exist_ok=True)
-    with open(MODEL_PATH, 'wb') as f:
-        pickle.dump(model, f)
-    
-    st.write("✅ Model trained and saved.")
-else:
-    with open(MODEL_PATH, 'rb') as f:
-        model = pickle.load(f)
-    st.write("✅ Model loaded successfully.")
+interests_list = sorted(list(set([row["interest"] for row in career_data])))
+skills_list = sorted(list(set([row["skill"] for row in career_data])))
 
-# Input lists to check user input validity
-all_interests = ['Science', 'Arts', 'Agriculture', 'Commerce', 'Education']
-all_skills = ['Mathematics', 'Writing', 'Biology', 'Accounting', 'Teaching']
+# -------------------- User Input --------------------
+st.subheader("👤 Tell us about yourself")
 
-# User input
-interest = st.text_input("Enter your main interest (e.g., Science, Arts, Commerce):")
-skills = st.text_input("Enter your main skill (e.g., Mathematics, Writing):")
+col1, col2 = st.columns(2)
+with col1:
+    interest = st.selectbox("Choose your main interest", options=[""] + interests_list)
+with col2:
+    skill = st.selectbox("Choose your main skill", options=[""] + skills_list)
 
-# Predict Button
-if st.button("Get Career Recommendation"):
-    if interest and skills:
-        if interest in all_interests and skills in all_skills:
-            interest_encoded = all_interests.index(interest)
-            skills_encoded = all_skills.index(skills)
-            prediction = model.predict([[interest_encoded, skills_encoded]])[0]
-            st.success(f"🎯 Recommended Career: {prediction}")
+# -------------------- NLP Matching Logic --------------------
+def recommend_careers(user_interest, user_skill):
+    recommendations = []
+    for row in career_data:
+        interest_match = difflib.SequenceMatcher(None, row["interest"].lower(), user_interest.lower()).ratio()
+        skill_match = difflib.SequenceMatcher(None, row["skill"].lower(), user_skill.lower()).ratio()
+        score = (interest_match + skill_match) / 2
+        if score > 0.6:  # threshold
+            recommendations.append((row["career"], score))
+    recommendations.sort(key=lambda x: x[1], reverse=True)
+    return [r[0] for r in recommendations]
+
+# -------------------- Get Recommendation --------------------
+if st.button("🔍 Get Career Recommendations"):
+    if interest and skill:
+        results = recommend_careers(interest, skill)
+        if results:
+            st.success("✅ Based on your interest and skill, you may enjoy these careers:")
+            for career in results:
+                st.markdown(f"- 🎯 **{career}**")
         else:
-            st.error(f"❌ Please enter valid interest and skill from these lists:\nInterests: {all_interests}\nSkills: {all_skills}")
+            st.error("❌ Sorry, we couldn't find a good match. Try different inputs.")
     else:
-        st.error("❌ Please enter both interest and skill.")
+        st.warning("⚠️ Please select both interest and skill to continue.")
+
+# -------------------- Footer --------------------
+st.markdown("---")
+st.markdown("<p style='text-align: center; font-size: 13px;'>Built by Zain • Powered by Streamlit & AI ✨</p>", unsafe_allow_html=True)
+
 
