@@ -1,9 +1,15 @@
+# -------------------- MUST BE FIRST: Import & Page Config --------------------
 import streamlit as st
+
+st.set_page_config(
+    page_title="Career Counselor AI",
+    page_icon="🎯",
+    layout="centered"
+)
+
+# -------------------- Other Imports --------------------
 import pandas as pd
 import difflib
-
-# -------------------- MUST BE FIRST --------------------
-st.set_page_config(page_title="Career Counselor AI", page_icon="🎯", layout="centered")
 
 # -------------------- Hide Streamlit footer & menu --------------------
 hide_streamlit_style = """
@@ -21,7 +27,7 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# -------------------- Example Data (for demo) --------------------
+# -------------------- Example Data --------------------
 career_data = [
     {"career": "Data Scientist", "interest": "Science", "skill": "Mathematics"},
     {"career": "Journalist", "interest": "Arts", "skill": "Writing"},
@@ -73,6 +79,7 @@ if st.button("🔍 Get Career Recommendations"):
 # -------------------- Footer --------------------
 st.markdown("---")
 st.markdown("<p style='text-align: center; font-size: 13px;'>Built by Zain • Powered by Streamlit & AI ✨</p>", unsafe_allow_html=True)
+
 
 
 
