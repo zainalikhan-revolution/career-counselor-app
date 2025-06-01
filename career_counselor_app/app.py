@@ -2,22 +2,38 @@ import streamlit as st
 import pandas as pd
 from sentence_transformers import SentenceTransformer
 from sklearn.metrics.pairwise import cosine_similarity
+from difflib import SequenceMatcher
 
-st.set_page_config(page_title="AI Career & Opportunity Finder", page_icon="🎓", layout="centered")
+# ------------------ PAGE CONFIG ------------------
+st.set_page_config(
+    page_title="AI Career & Opportunity Finder",
+    page_icon="🎓",
+    layout="centered"
+)
 
-# Hide Streamlit branding
+# ------------------ HIDE STREAMLIT DEFAULTS ------------------
 st.markdown("""
-<style>
-#MainMenu {visibility: hidden;}
-footer {visibility: hidden;}
-</style>
+    <style>
+        #MainMenu {visibility: hidden;}
+        footer {visibility: hidden;}
+        .stButton>button {
+            background-color: #4CAF50;
+            color: white;
+            font-weight: bold;
+            padding: 10px 20px;
+            border-radius: 8px;
+        }
+    </style>
 """, unsafe_allow_html=True)
 
-# Load Models and Data
+# ------------------ LOAD MODEL ------------------
 @st.cache_data
 def load_model():
     return SentenceTransformer('all-MiniLM-L6-v2')
 
+model = load_model()
+
+# ------------------ LOAD DATA ------------------
 @st.cache_data
 def load_career_data():
     return pd.read_csv("career_data.csv")
@@ -26,73 +42,78 @@ def load_career_data():
 def load_opportunities():
     return pd.read_csv("opportunities.csv")
 
-model = load_model()
 career_df = load_career_data()
 opp_df = load_opportunities()
 
-# UI Tabs
-tab1, tab2 = st.tabs(["🎯 Career Recommender", "🌍 Scholarships & Opportunities"])
+# ------------------ APP TITLE ------------------
+st.markdown("<h1 style='text-align: center;'>🎓 AI Opportunity Finder for Rural Students</h1>", unsafe_allow_html=True)
+st.markdown("<p style='text-align: center;'>Discover personalized careers, scholarships, and free programs using AI</p>", unsafe_allow_html=True)
 
-# ============ Tab 1: Career Recommender ============
-with tab1:
-    st.header("🎯 Find Careers Based on Your Interests")
-    interests = sorted(career_df['interest'].dropna().unique())
-    skills = sorted(career_df['skill'].dropna().unique())
+# ------------------ TABS ------------------
+career_tab, opportunity_tab = st.tabs(["💼 Career Guidance", "🌍 Scholarships & Opportunities"])
+
+# ------------------ TAB 1: CAREERS ------------------
+with career_tab:
+    st.subheader("🎯 Get Personalized Career Recommendations")
+
+    interests_list = sorted(career_df["interest"].dropna().unique())
+    skills_list = sorted(career_df["skill"].dropna().unique())
 
     col1, col2 = st.columns(2)
     with col1:
-        selected_interest = st.selectbox("Your Interest", options=[""] + interests)
+        selected_interest = st.selectbox("Your Main Interest", [""] + list(interests_list))
     with col2:
-        selected_skill = st.selectbox("Your Skill", options=[""] + skills)
+        selected_skill = st.selectbox("Your Main Skill", [""] + list(skills_list))
 
-    def match_careers(user_interest, user_skill):
-        from difflib import SequenceMatcher
-        matches = []
+    def match_careers(interest, skill):
+        results = []
         for _, row in career_df.iterrows():
-            i_score = SequenceMatcher(None, row['interest'], user_interest).ratio()
-            s_score = SequenceMatcher(None, row['skill'], user_skill).ratio()
-            avg_score = (i_score + s_score) / 2
-            if avg_score >= 0.6:
-                matches.append((row['career'], avg_score))
-        matches = sorted(matches, key=lambda x: x[1], reverse=True)
-        return [m[0] for m in matches]
+            interest_score = SequenceMatcher(None, row["interest"].lower(), interest.lower()).ratio()
+            skill_score = SequenceMatcher(None, row["skill"].lower(), skill.lower()).ratio()
+            score = (interest_score + skill_score) / 2
+            if score >= 0.6:
+                results.append((row["career"], score))
+        results.sort(key=lambda x: x[1], reverse=True)
+        return [r[0] for r in results]
 
-    if st.button("🔍 Get Career Matches"):
+    if st.button("🔍 Find Careers"):
         if selected_interest and selected_skill:
-            results = match_careers(selected_interest, selected_skill)
-            if results:
-                st.success("Here are some careers you may like:")
-                for r in results:
-                    st.markdown(f"- ✅ **{r}**")
+            careers = match_careers(selected_interest, selected_skill)
+            if careers:
+                st.success("Here are career paths matched to you:")
+                for c in careers:
+                    st.markdown(f"✅ **{c}**")
             else:
-                st.error("No strong matches found. Try different inputs.")
+                st.error("Sorry, no strong matches found.")
         else:
             st.warning("Please select both interest and skill.")
 
-# ============ Tab 2: Opportunities ============
-with tab2:
-    st.header("🌍 Find Scholarships, Internships, and Free Programs")
-    st.write("This tool recommends global programs for rural & underserved students using AI.")
+# ------------------ TAB 2: OPPORTUNITIES ------------------
+with opportunity_tab:
+    st.subheader("🌍 Discover Global Scholarships & Free Programs")
 
-    user_field = st.text_input("What field are you interested in? (e.g., AI, Biology, Engineering)")
-    user_group = st.text_input("Who are you? (e.g., rural student, low-income, youth)")
-    user_query = f"{user_field} {user_group}"
+    field = st.text_input("What field are you interested in? (e.g. AI, Biology, Health)")
+    background = st.text_input("Describe your background or challenges (e.g. rural, low-income)")
 
     if st.button("🎓 Find Opportunities"):
-        with st.spinner("Finding the best matches for you..."):
-            query_embedding = model.encode([user_query])
-            combined_text = (opp_df["Field"] + " " + opp_df["Target Group"] + " " + opp_df["Description"]).tolist()
-            data_embeddings = model.encode(combined_text)
-            sims = cosine_similarity(query_embedding, data_embeddings)[0]
-            opp_df["score"] = sims
-            top_matches = opp_df.sort_values(by="score", ascending=False).head(5)
+        if field and background:
+            query = f"{field} {background}"
+            query_vec = model.encode([query])
+            opp_df["text"] = opp_df["Field"] + " " + opp_df["Target Group"] + " " + opp_df["Description"]
+            opp_embeddings = model.encode(opp_df["text"].tolist())
+            scores = cosine_similarity(query_vec, opp_embeddings)[0]
+            opp_df["score"] = scores
+            top_opps = opp_df.sort_values(by="score", ascending=False).head(5)
 
-            for _, row in top_matches.iterrows():
-                st.subheader(f"{row['Type']} — {row['Name']}")
-                st.write(f"🌐 Field: **{row['Field']}** | 🎯 Group: *{row['Target Group']}* | 🌍 Country: {row['Country']}")
+            for _, row in top_opps.iterrows():
+                st.markdown(f"### 🎓 {row['Name']}")
+                st.write(f"📌 Type: **{row['Type']}**")
+                st.write(f"🌐 Field: {row['Field']} | 🎯 Group: {row['Target Group']} | 🌍 Country: {row['Country']}")
                 st.write(f"📝 {row['Description']}")
-                st.markdown(f"[🔗 Learn more]({row['URL']})")
+                st.markdown(f"[🔗 Apply or Learn More]({row['URL']})")
                 st.markdown("---")
+        else:
+            st.warning("Please fill in both field and background to get results.")
 
 
 
