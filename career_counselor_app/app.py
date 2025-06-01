@@ -1,10 +1,9 @@
 import streamlit as st
+import pandas as pd
+import difflib
 
-# Set custom page title and icon
-st.set_page_config(
-    page_title="Career Counselor AI",  # Your custom app title
-    page_icon="🎯",  # You can change this emoji or use a URL to a favicon
-)
+# -------------------- Page Setup --------------------
+st.set_page_config(page_title="Career Counselor AI", page_icon="🎯", layout="centered")
 
 # Hide Streamlit footer and hamburger menu
 hide_streamlit_style = """
@@ -15,12 +14,7 @@ hide_streamlit_style = """
 """
 st.markdown(hide_streamlit_style, unsafe_allow_html=True)
 
-import streamlit as st
-import pandas as pd
-import difflib
-
-# -------------------- Page Setup --------------------
-st.set_page_config(page_title="AI Career Counselor", layout="centered")
+# -------------------- Header --------------------
 st.markdown(
     "<h1 style='text-align: center; color: #4B8BBE;'>🎓 AI-Powered Career Counselor</h1>"
     "<p style='text-align: center;'>Get smart and personalized career advice based on your interests and skills</p>",
@@ -51,14 +45,14 @@ with col1:
 with col2:
     skill = st.selectbox("Choose your main skill", options=[""] + skills_list)
 
-# -------------------- NLP Matching Logic --------------------
+# -------------------- Recommendation Logic --------------------
 def recommend_careers(user_interest, user_skill):
     recommendations = []
     for row in career_data:
         interest_match = difflib.SequenceMatcher(None, row["interest"].lower(), user_interest.lower()).ratio()
         skill_match = difflib.SequenceMatcher(None, row["skill"].lower(), user_skill.lower()).ratio()
         score = (interest_match + skill_match) / 2
-        if score > 0.6:  # threshold
+        if score > 0.6:  # Threshold
             recommendations.append((row["career"], score))
     recommendations.sort(key=lambda x: x[1], reverse=True)
     return [r[0] for r in recommendations]
@@ -79,6 +73,7 @@ if st.button("🔍 Get Career Recommendations"):
 # -------------------- Footer --------------------
 st.markdown("---")
 st.markdown("<p style='text-align: center; font-size: 13px;'>Built by Zain • Powered by Streamlit & AI ✨</p>", unsafe_allow_html=True)
+
 
 
 
