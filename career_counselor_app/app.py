@@ -2,14 +2,14 @@ import streamlit as st
 import pandas as pd
 import difflib
 
-# -------------------- Page Setup --------------------
+# -------------------- MUST BE FIRST --------------------
 st.set_page_config(page_title="Career Counselor AI", page_icon="🎯", layout="centered")
 
-# Hide Streamlit footer and hamburger menu
+# -------------------- Hide Streamlit footer & menu --------------------
 hide_streamlit_style = """
     <style>
-    #MainMenu {visibility: hidden;}  /* hides the hamburger menu */
-    footer {visibility: hidden;}     /* hides the footer */
+    #MainMenu {visibility: hidden;}
+    footer {visibility: hidden;}
     </style>
 """
 st.markdown(hide_streamlit_style, unsafe_allow_html=True)
@@ -52,12 +52,12 @@ def recommend_careers(user_interest, user_skill):
         interest_match = difflib.SequenceMatcher(None, row["interest"].lower(), user_interest.lower()).ratio()
         skill_match = difflib.SequenceMatcher(None, row["skill"].lower(), user_skill.lower()).ratio()
         score = (interest_match + skill_match) / 2
-        if score > 0.6:  # Threshold
+        if score > 0.6:
             recommendations.append((row["career"], score))
     recommendations.sort(key=lambda x: x[1], reverse=True)
     return [r[0] for r in recommendations]
 
-# -------------------- Get Recommendation --------------------
+# -------------------- Show Results --------------------
 if st.button("🔍 Get Career Recommendations"):
     if interest and skill:
         results = recommend_careers(interest, skill)
@@ -73,6 +73,7 @@ if st.button("🔍 Get Career Recommendations"):
 # -------------------- Footer --------------------
 st.markdown("---")
 st.markdown("<p style='text-align: center; font-size: 13px;'>Built by Zain • Powered by Streamlit & AI ✨</p>", unsafe_allow_html=True)
+
 
 
 
