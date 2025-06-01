@@ -6,6 +6,41 @@ st.set_page_config(
     page_icon="🎯",
     layout="centered"
 )
+st.markdown(
+    """
+    <style>
+    .main {
+        background-color: #f7f9fc;
+        padding: 2rem;
+    }
+    h1 {
+        color: #2a9d8f;
+    }
+    .stButton>button {
+        background-color: #e76f51;
+        color: white;
+        font-weight: bold;
+        border-radius: 8px;
+        padding: 10px 20px;
+        transition: 0.3s;
+    }
+    .stButton>button:hover {
+        background-color: #d35400;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+col1, col2 = st.columns([1, 2])
+
+with col1:
+    st.image("career_image.png", width=200)  # Add an image in your folder
+
+with col2:
+    st.title("🎯 AI-Powered Career Counselor")
+    st.write("Helping you discover the best career paths based on your interests.")
+age = st.slider("Your Age", 10, 60, 18)
+experience = st.radio("Do you have any work experience?", ("Yes", "No"))
 
 # -------------------- Other Imports --------------------
 import pandas as pd
