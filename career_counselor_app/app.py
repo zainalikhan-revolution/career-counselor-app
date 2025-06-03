@@ -27,6 +27,16 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ------------------ LOAD MODEL ------------------
+import os
+import pandas as pd
+
+# This finds the correct path automatically
+career_data_path = os.path.join(os.path.dirname(__file__), 'career_data.csv')
+opportunities_path = os.path.join(os.path.dirname(__file__), 'opportunities.csv')
+
+career_df = pd.read_csv(career_data_path)
+opportunities_df = pd.read_csv(opportunities_path)
+
 @st.cache_data
 def load_model():
     return SentenceTransformer('all-MiniLM-L6-v2')
