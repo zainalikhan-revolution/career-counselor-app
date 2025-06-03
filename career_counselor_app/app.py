@@ -36,11 +36,12 @@ model = load_model()
 # ------------------ LOAD DATA ------------------
 @st.cache_data
 def load_career_data():
-    return pd.read_csv("career_data.csv")  # ✅ fixed path
+    return pd.read_csv("career_counselor_app/career_data.csv")  # ✅ fixed
 
 @st.cache_data
 def load_opportunities():
-    return pd.read_csv("opportunities.csv")  # ✅ fixed path
+    return pd.read_csv("career_counselor_app/opportunities.csv")  # ✅ fixed
+
 
 career_df = load_career_data()
 opp_df = load_opportunities()
