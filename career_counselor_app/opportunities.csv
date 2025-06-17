@@ -1,6 +1,17 @@
-Type,Name,Field,Target Group,Country,URL,Description
-Scholarship,UWC Global Scholarship,AI,Rural Students,Global,https://www.uwc.org,"Fully funded high school education for underrepresented students"
-Internship,UNICEF AI Internship,Machine Learning,Low-income students,Global,https://www.unicef.org,"Remote AI internship focused on social good"
-Platform,Google AI for Youth,AI,Youth,Based in India,https://ai.google,"Free AI training programs for students in rural areas"
-Scholarship,DAAD Undergraduate Scholarships,Engineering,Developing countries,Germany,https://daad.de,"Bachelor-level scholarships in STEM fields"
-Platform,MIT OpenCourseWare,All,Everyone,Global,https://ocw.mit.edu,"Free online courses from MIT in AI, Math, and more"
+
+Scholarship	UWC Global Scholarship	AI	Rural Students	Global	https://www.uwc.org	Fully funded high school education for underrepresented students
+Internship	UNICEF AI Internship	Machine Learning	Low-income students	Global	https://www.unicef.org	Remote AI internship focused on social good
+Platform	Google AI for Youth	AI	Youth	Based in India	https://ai.google	Free AI training programs for students in rural areas
+Scholarship	DAAD Undergraduate Scholarships	Engineering	Developing countries	Germany	https://daad.de	Bachelor-level scholarships in STEM fields
+Platform	MIT OpenCourseWare	All	Everyone	Global	https://ocw.mit.edu	Free online courses from MIT in AI, Math, and more
+Scholarship	Schmidt Futures Rise Program	All (including AI/CS)	Students aged 15-17	Global	https://www.risefortheworld.org	Fully funded lifelong scholarship and mentorship for exceptional teens solving global problems
+Internship	Microsoft Learn Student Ambassadors	Computer Science	University students	Global	https://studentambassadors.microsoft.com	Leadership, mentorship, and networking opportunity with Microsoft for student developers
+Platform	DeepLearning.AI Courses	AI, Machine Learning	Everyone	Global	https://www.deeplearning.ai	Free and paid online courses in AI, machine learning, and neural networks from Andrew Ng
+Scholarship	Weidenfeld-Hoffmann Scholarships (Oxford)	Public Policy, CS, Environment	Developing Countries	UK	https://www.ox.ac.uk	Fully funded graduate scholarships at Oxford for future leaders from developing regions
+Scholarship	ETH Zurich Excellence Scholarships	STEM, AI	International students	Switzerland	https://ethz.ch/en/studies/financial/scholarships.html	Full financial support for outstanding Master's students in technical and science fields
+Platform	Harvard CS50 (edX)	Computer Science	Everyone	Global	https://cs50.harvard.edu	Free Harvard-level Computer Science course covering programming and problem solving
+Scholarship	MasterCard Foundation Scholars Program	Various including CS/AI	Low-income African students	Africa + Global Partners	https://mastercardfdn.org	Fully funded Bachelor's and Master's scholarships with leadership training
+Internship	AI Research Internships at Mila (Quebec)	AI, Deep Learning	Students interested in research	Canada	https://mila.quebec	Competitive AI internship at one of the world’s leading AI research institutes
+Scholarship	Swedish Institute Scholarships for Global Professionals (SISGP)	STEM, Public Policy, AI	Developing Countries	Sweden	https://si.se/en/apply/scholarships	Fully funded Master’s scholarships for future global leaders
+Platform	Coursera Financial Aid Courses	AI, Data Science, Python	Low-income learners	Global	https://www.coursera.org	Apply for financial aid to access paid courses for free on AI, ML, and more
+
