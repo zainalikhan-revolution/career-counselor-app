@@ -12,16 +12,14 @@ st.set_page_config(
     layout="centered"
 )
 
-# ✅ Try to load the logo safely
+# ------------------ LOGO ------------------
 logo_path = os.path.join(os.path.dirname(__file__), "logo.png")
 
-# If logo exists, show it
 if os.path.exists(logo_path):
     with st.sidebar:
         st.image(logo_path, width=150)
         st.markdown("## 🌟 Welcome to AI Finder")
         st.markdown("Discover opportunities powered by AI")
-
     st.image(logo_path, width=200)
 else:
     with st.sidebar:
@@ -29,11 +27,11 @@ else:
         st.markdown("Discover opportunities powered by AI")
     st.warning("⚠️ 'logo.png' not found. Please upload it to the same folder as app.py")
 
-# ------------------ UI ------------------
+# ------------------ UI HEADER ------------------
 st.title("🎓 AI Opportunity Finder for Rural Students")
 st.markdown("Helping rural students find careers, scholarships, and AI programs.")
 
-# ------------------ HIDE STREAMLIT DEFAULTS ------------------
+# ------------------ STYLING ------------------
 st.markdown("""
     <style>
         #MainMenu {visibility: hidden;}
@@ -48,10 +46,11 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# ------------------ LOAD DATA ------------------
+# ------------------ LOAD FILE PATHS ------------------
 career_data_path = os.path.join(os.path.dirname(__file__), 'career_data.csv')
 opportunities_path = os.path.join(os.path.dirname(__file__), 'opportunities.csv')
 
+# ------------------ CACHED FUNCTIONS ------------------
 @st.cache_data
 def load_model():
     return SentenceTransformer('all-MiniLM-L6-v2')
@@ -64,6 +63,7 @@ def load_career_data():
 def load_opportunities():
     return pd.read_csv(opportunities_path)
 
+# ------------------ LOAD DATA ------------------
 model = load_model()
 career_df = load_career_data()
 opp_df = load_opportunities()
@@ -71,7 +71,7 @@ opp_df = load_opportunities()
 # ------------------ TABS ------------------
 career_tab, opportunity_tab = st.tabs(["💼 Career Guidance", "🌍 Scholarships & Opportunities"])
 
-# ------------------ TAB 1 ------------------
+# ------------------ TAB 1: CAREER GUIDANCE ------------------
 with career_tab:
     st.subheader("🎯 Get Personalized Career Recommendations")
 
@@ -105,7 +105,7 @@ with career_tab:
         else:
             st.warning("Please select both interest and skill.")
 
-# ------------------ TAB 2 ------------------
+# ------------------ TAB 2: OPPORTUNITIES ------------------
 with opportunity_tab:
     st.subheader("🌍 Discover Global Scholarships & Free Programs")
 
