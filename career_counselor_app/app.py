@@ -3,6 +3,18 @@ import pandas as pd
 from sentence_transformers import SentenceTransformer
 from sklearn.metrics.pairwise import cosine_similarity
 from difflib import SequenceMatcher
+import streamlit as st
+with st.sidebar:
+    st.image("logo.png", width=150)
+    st.markdown("## 🌟 Welcome to AI Finder")
+    st.markdown("Discover opportunities powered by AI")
+
+# ✅ Show your logo
+st.image("logo.png", width=200)  # You can change 200 to 150 or 250 if you want
+
+# Your title
+st.title("🎓 AI Opportunity Finder for Rural Students")
+st.markdown("Helping rural students find careers, scholarships, and AI programs.")
 
 # ------------------ PAGE CONFIG ------------------
 st.set_page_config(
