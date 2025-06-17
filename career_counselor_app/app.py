@@ -1,29 +1,33 @@
 import streamlit as st
 import pandas as pd
-import os
 from sentence_transformers import SentenceTransformer
 from sklearn.metrics.pairwise import cosine_similarity
 from difflib import SequenceMatcher
+import os
 
-# ------------------ CONFIG & LOGO ------------------
+# Get path to logo
+logo_path = os.path.join(os.path.dirname(__file__), "logo.png")
+
+with st.sidebar:
+    st.image(logo_path, width=150)
+    st.markdown("## 🌟 Welcome to AI Finder")
+    st.markdown("Discover opportunities powered by AI")
+
+# ✅ Show your logo
+st.image(logo_path, width=200)  # You can change 200 to 150 or 250 if you want
+
+# Your title
+st.title("🎓 AI Opportunity Finder for Rural Students")
+st.markdown("Helping rural students find careers, scholarships, and AI programs.")
+
+# ------------------ PAGE CONFIG ------------------
 st.set_page_config(
     page_title="AI Career & Opportunity Finder",
     page_icon="🎓",
     layout="centered"
 )
 
-# Sidebar logo + intro
-with st.sidebar:
-    st.image("logo.png", width=150)
-    st.markdown("## 🌟 Welcome to AI Finder")
-    st.markdown("Discover opportunities powered by AI")
-
-# Top logo + title
-st.image("logo.png", width=200)
-st.title("🎓 AI Opportunity Finder for Rural Students")
-st.markdown("Helping rural students find careers, scholarships, and AI programs.")
-
-# Hide Streamlit footer/menu
+# ------------------ HIDE STREAMLIT DEFAULTS ------------------
 st.markdown("""
     <style>
         #MainMenu {visibility: hidden;}
@@ -38,34 +42,39 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# ------------------ LOAD DATA ------------------
+# ------------------ LOAD MODEL ------------------
 career_data_path = os.path.join(os.path.dirname(__file__), 'career_data.csv')
 opportunities_path = os.path.join(os.path.dirname(__file__), 'opportunities.csv')
+
+career_df = pd.read_csv(career_data_path)
+opportunities_df = pd.read_csv(opportunities_path)
 
 @st.cache_data
 def load_model():
     return SentenceTransformer('all-MiniLM-L6-v2')
 
+model = load_model()
+
+# ------------------ LOAD DATA ------------------
 @st.cache_data
 def load_career_data():
-    return pd.read_csv(career_data_path)
+    return pd.read_csv("career_counselor_app/career_data.csv")
 
 @st.cache_data
 def load_opportunities():
-    return pd.read_csv(opportunities_path)
+    return pd.read_csv("career_counselor_app/opportunities.csv")
 
-model = load_model()
 career_df = load_career_data()
 opp_df = load_opportunities()
 
-# ------------------ UI: HEADER ------------------
+# ------------------ APP TITLE ------------------
 st.markdown("<h1 style='text-align: center;'>🎓 AI Opportunity Finder for Rural Students</h1>", unsafe_allow_html=True)
 st.markdown("<p style='text-align: center;'>Discover personalized careers, scholarships, and free programs using AI</p>", unsafe_allow_html=True)
 
 # ------------------ TABS ------------------
 career_tab, opportunity_tab = st.tabs(["💼 Career Guidance", "🌍 Scholarships & Opportunities"])
 
-# ------------------ TAB 1: CAREER MATCHING ------------------
+# ------------------ TAB 1: CAREERS ------------------
 with career_tab:
     st.subheader("🎯 Get Personalized Career Recommendations")
 
@@ -101,7 +110,7 @@ with career_tab:
         else:
             st.warning("Please select both interest and skill.")
 
-# ------------------ TAB 2: OPPORTUNITY MATCHING ------------------
+# ------------------ TAB 2: OPPORTUNITIES ------------------
 with opportunity_tab:
     st.subheader("🌍 Discover Global Scholarships & Free Programs")
 
@@ -127,6 +136,7 @@ with opportunity_tab:
                 st.markdown("---")
         else:
             st.warning("Please fill in both field and background to get results.")
+
 
 
 
