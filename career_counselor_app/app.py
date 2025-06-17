@@ -1,24 +1,9 @@
 import streamlit as st
 import pandas as pd
+import os
 from sentence_transformers import SentenceTransformer
 from sklearn.metrics.pairwise import cosine_similarity
 from difflib import SequenceMatcher
-import os
-
-# Get path to logo
-logo_path = os.path.join(os.path.dirname(__file__), "logo.png")
-
-with st.sidebar:
-    st.image(logo_path, width=150)
-    st.markdown("## 🌟 Welcome to AI Finder")
-    st.markdown("Discover opportunities powered by AI")
-
-# ✅ Show your logo
-st.image(logo_path, width=200)  # You can change 200 to 150 or 250 if you want
-
-# Your title
-st.title("🎓 AI Opportunity Finder for Rural Students")
-st.markdown("Helping rural students find careers, scholarships, and AI programs.")
 
 # ------------------ PAGE CONFIG ------------------
 st.set_page_config(
@@ -26,6 +11,27 @@ st.set_page_config(
     page_icon="🎓",
     layout="centered"
 )
+
+# ✅ Try to load the logo safely
+logo_path = os.path.join(os.path.dirname(__file__), "logo.png")
+
+# If logo exists, show it
+if os.path.exists(logo_path):
+    with st.sidebar:
+        st.image(logo_path, width=150)
+        st.markdown("## 🌟 Welcome to AI Finder")
+        st.markdown("Discover opportunities powered by AI")
+
+    st.image(logo_path, width=200)
+else:
+    with st.sidebar:
+        st.markdown("## 🌟 Welcome to AI Finder")
+        st.markdown("Discover opportunities powered by AI")
+    st.warning("⚠️ 'logo.png' not found. Please upload it to the same folder as app.py")
+
+# ------------------ UI ------------------
+st.title("🎓 AI Opportunity Finder for Rural Students")
+st.markdown("Helping rural students find careers, scholarships, and AI programs.")
 
 # ------------------ HIDE STREAMLIT DEFAULTS ------------------
 st.markdown("""
@@ -42,39 +48,30 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# ------------------ LOAD MODEL ------------------
+# ------------------ LOAD DATA ------------------
 career_data_path = os.path.join(os.path.dirname(__file__), 'career_data.csv')
 opportunities_path = os.path.join(os.path.dirname(__file__), 'opportunities.csv')
-
-career_df = pd.read_csv(career_data_path)
-opportunities_df = pd.read_csv(opportunities_path)
 
 @st.cache_data
 def load_model():
     return SentenceTransformer('all-MiniLM-L6-v2')
 
-model = load_model()
-
-# ------------------ LOAD DATA ------------------
 @st.cache_data
 def load_career_data():
-    return pd.read_csv("career_counselor_app/career_data.csv")
+    return pd.read_csv(career_data_path)
 
 @st.cache_data
 def load_opportunities():
-    return pd.read_csv("career_counselor_app/opportunities.csv")
+    return pd.read_csv(opportunities_path)
 
+model = load_model()
 career_df = load_career_data()
 opp_df = load_opportunities()
-
-# ------------------ APP TITLE ------------------
-st.markdown("<h1 style='text-align: center;'>🎓 AI Opportunity Finder for Rural Students</h1>", unsafe_allow_html=True)
-st.markdown("<p style='text-align: center;'>Discover personalized careers, scholarships, and free programs using AI</p>", unsafe_allow_html=True)
 
 # ------------------ TABS ------------------
 career_tab, opportunity_tab = st.tabs(["💼 Career Guidance", "🌍 Scholarships & Opportunities"])
 
-# ------------------ TAB 1: CAREERS ------------------
+# ------------------ TAB 1 ------------------
 with career_tab:
     st.subheader("🎯 Get Personalized Career Recommendations")
 
@@ -82,10 +79,8 @@ with career_tab:
     skills_list = sorted(career_df["skill"].dropna().unique())
 
     col1, col2 = st.columns(2)
-    with col1:
-        selected_interest = st.selectbox("Your Main Interest", [""] + list(interests_list))
-    with col2:
-        selected_skill = st.selectbox("Your Main Skill", [""] + list(skills_list))
+    selected_interest = col1.selectbox("Your Main Interest", [""] + list(interests_list))
+    selected_skill = col2.selectbox("Your Main Skill", [""] + list(skills_list))
 
     def match_careers(interest, skill):
         results = []
@@ -110,7 +105,7 @@ with career_tab:
         else:
             st.warning("Please select both interest and skill.")
 
-# ------------------ TAB 2: OPPORTUNITIES ------------------
+# ------------------ TAB 2 ------------------
 with opportunity_tab:
     st.subheader("🌍 Discover Global Scholarships & Free Programs")
 
@@ -136,6 +131,7 @@ with opportunity_tab:
                 st.markdown("---")
         else:
             st.warning("Please fill in both field and background to get results.")
+
 
 
 
