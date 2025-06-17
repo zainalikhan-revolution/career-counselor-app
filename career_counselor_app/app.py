@@ -25,13 +25,13 @@ else:
     with st.sidebar:
         st.markdown("## 🌟 Welcome to AI Finder")
         st.markdown("Discover opportunities powered by AI")
-    st.warning("⚠️ 'logo.png' not found. Please upload it to the same folder as app.py")
+    st.warning("⚠️ 'logo.png' not found. Please upload it manually.")
 
-# ------------------ UI HEADER ------------------
+# ------------------ UI ------------------
 st.title("🎓 AI Opportunity Finder for Rural Students")
 st.markdown("Helping rural students find careers, scholarships, and AI programs.")
 
-# ------------------ STYLING ------------------
+# ------------------ CUSTOM STYLE ------------------
 st.markdown("""
     <style>
         #MainMenu {visibility: hidden;}
@@ -46,11 +46,10 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# ------------------ LOAD FILE PATHS ------------------
+# ------------------ LOAD DATA ------------------
 career_data_path = os.path.join(os.path.dirname(__file__), 'career_data.csv')
 opportunities_path = os.path.join(os.path.dirname(__file__), 'opportunities.csv')
 
-# ------------------ CACHED FUNCTIONS ------------------
 @st.cache_data
 def load_model():
     return SentenceTransformer('all-MiniLM-L6-v2')
@@ -63,7 +62,6 @@ def load_career_data():
 def load_opportunities():
     return pd.read_csv(opportunities_path)
 
-# ------------------ LOAD DATA ------------------
 model = load_model()
 career_df = load_career_data()
 opp_df = load_opportunities()
@@ -71,7 +69,7 @@ opp_df = load_opportunities()
 # ------------------ TABS ------------------
 career_tab, opportunity_tab = st.tabs(["💼 Career Guidance", "🌍 Scholarships & Opportunities"])
 
-# ------------------ TAB 1: CAREER GUIDANCE ------------------
+# ------------------ TAB 1 ------------------
 with career_tab:
     st.subheader("🎯 Get Personalized Career Recommendations")
 
@@ -105,7 +103,7 @@ with career_tab:
         else:
             st.warning("Please select both interest and skill.")
 
-# ------------------ TAB 2: OPPORTUNITIES ------------------
+# ------------------ TAB 2 ------------------
 with opportunity_tab:
     st.subheader("🌍 Discover Global Scholarships & Free Programs")
 
@@ -131,6 +129,7 @@ with opportunity_tab:
                 st.markdown("---")
         else:
             st.warning("Please fill in both field and background to get results.")
+
 
 
 
